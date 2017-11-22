@@ -241,10 +241,12 @@ class DiscreteScrollLayoutManager extends RecyclerView.LayoutManager {
             newPosition = NO_POSITION;
         } else if (currentPosition >= positionStart) {
             if (currentPosition < positionStart + itemCount) {
-                //If currentPosition is in the removed items, then the new item became current
-                currentPosition = NO_POSITION;
+                // If the removed range contain currentPosition.
+                newPosition = Math.max(0, Math.min(positionStart, getItemCount() - 1));
+            } else {
+                // If the removed range is ahead the removed items
+                newPosition = Math.max(0, currentPosition - itemCount);
             }
-            newPosition = Math.max(0, currentPosition - itemCount);
         }
         onNewPosition(newPosition);
     }
