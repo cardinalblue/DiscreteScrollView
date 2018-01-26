@@ -14,8 +14,8 @@ android {
 }
 
 dependencies {
-    compile rootProject.ext.dep.supportAppcompatV7
-    compile rootProject.ext.dep.supportRecyclerViewV7
+    implementation rootProject.ext.dep.supportAppcompatV7
+    implementation rootProject.ext.dep.supportRecyclerViewV7
 }
 
 //publish {
