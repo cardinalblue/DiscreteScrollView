@@ -178,7 +178,9 @@ public class DiscreteScrollView extends RecyclerView {
         }
         int current = layoutManager.getCurrentPosition();
         ViewHolder currentHolder = getViewHolder(current);
-        notifyCurrentItemChanged(currentHolder, current);
+        if (currentHolder != null) {
+            notifyCurrentItemChanged(currentHolder, current);
+        }
     }
 
     private class ScrollStateListener implements DiscreteScrollLayoutManager.ScrollStateListener {
