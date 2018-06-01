@@ -23,7 +23,7 @@ public class DiscreteScrollView extends RecyclerView {
 
     public static final int NO_POSITION = DiscreteScrollLayoutManager.NO_POSITION;
 
-    private static final int DEFAULT_ORIENTATION = Orientation.HORIZONTAL.ordinal();
+    private static final int DEFAULT_ORIENTATION = HORIZONTAL;
 
     private DiscreteScrollLayoutManager layoutManager;
 
@@ -58,7 +58,7 @@ public class DiscreteScrollView extends RecyclerView {
 
         layoutManager = new DiscreteScrollLayoutManager(
                 getContext(), new ScrollStateListener(),
-                Orientation.values()[orientation]);
+                com.yarolegovich.discretescrollview.Orientation.values()[orientation]);
         setLayoutManager(layoutManager);
     }
 
@@ -110,10 +110,6 @@ public class DiscreteScrollView extends RecyclerView {
 
     public void setSlideOnFlingThreshold(int threshold){
         layoutManager.setSlideOnFlingThreshold(threshold);
-    }
-
-    public void setOrientation(Orientation orientation) {
-        layoutManager.setOrientation(orientation);
     }
 
     public void setOffscreenItems(int items) {

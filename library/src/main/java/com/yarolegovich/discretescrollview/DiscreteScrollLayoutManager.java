@@ -534,12 +534,6 @@ class DiscreteScrollLayoutManager extends RecyclerView.LayoutManager {
         requestLayout();
     }
 
-    public void setOrientation(Orientation orientation) {
-        orientationHelper = orientation.createHelper();
-        removeAllViews();
-        requestLayout();
-    }
-
     public void setShouldSlideOnFling(boolean result){
         shouldSlideOnFling = result;
     }
