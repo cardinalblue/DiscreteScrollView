@@ -32,7 +32,12 @@ public class DiscreteScrollView extends RecyclerView {
     private List<ScrollStateChangeListener> scrollStateChangeListeners;
     private List<OnItemChangedListener> onItemChangedListeners;
 
+    // [WORKAROUND] this flag is for identify UI update is trigger by user or program
     private AtomicBoolean mIsTouch = new AtomicBoolean(false);
+
+    // [WORKAROUND] this flag is for OnItemChangedListener, so we can identify the scroll changed
+    // is trigger by user or program
+    private AtomicBoolean mIsScrollTouch = new AtomicBoolean(false);
 
     public DiscreteScrollView(Context context) {
         super(context);
@@ -183,7 +188,7 @@ public class DiscreteScrollView extends RecyclerView {
 
     private void notifyCurrentItemChanged(ViewHolder holder, int current) {
         for (OnItemChangedListener listener : onItemChangedListeners) {
-            listener.onCurrentItemChanged(holder, current, mIsTouch.get());
+            listener.onCurrentItemChanged(holder, current, mIsScrollTouch.get());
         }
     }
 
@@ -207,6 +212,7 @@ public class DiscreteScrollView extends RecyclerView {
 
         @Override
         public void onScrollStart() {
+            mIsScrollTouch.set(mIsTouch.get());
             if (scrollStateChangeListeners.isEmpty()) {
                 return;
             }
@@ -228,10 +234,18 @@ public class DiscreteScrollView extends RecyclerView {
                 notifyScrollEnd(holder, current);
                 notifyCurrentItemChanged(holder, current);
             }
+            mIsScrollTouch.set(false);
         }
 
         @Override
         public void onScroll(float currentViewPosition) {
+            // We update this flag aggressively because the lifecycle between scroll/touch is different,
+            // so I will force update flag if isTouchFlag has been true.
+            // --[onScrollStart]----------[onScroll]----------[onScrollEnd]-->
+            // -----------------[onTouchDown]------[onTouchUp]--------------->
+            if (mIsTouch.get()) {
+                mIsScrollTouch.set(true);
+            }
             if (scrollStateChangeListeners.isEmpty()) {
                 return;
             }
