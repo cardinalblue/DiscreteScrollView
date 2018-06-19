@@ -7,6 +7,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
 import android.view.View;
 
 import com.yarolegovich.discretescrollview.transform.DiscreteScrollItemTransformer;
@@ -14,6 +15,7 @@ import com.yarolegovich.discretescrollview.util.ScrollListenerAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Created by yarolegovich on 18.02.2017.
@@ -29,6 +31,8 @@ public class DiscreteScrollView extends RecyclerView {
 
     private List<ScrollStateChangeListener> scrollStateChangeListeners;
     private List<OnItemChangedListener> onItemChangedListeners;
+
+    private AtomicBoolean mIsTouch = new AtomicBoolean(false);
 
     public DiscreteScrollView(Context context) {
         super(context);
@@ -87,6 +91,21 @@ public class DiscreteScrollView extends RecyclerView {
     public ViewHolder getViewHolder(int position) {
         View view = layoutManager.findViewByPosition(position);
         return view != null ? getChildViewHolder(view) : null;
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+            case MotionEvent.ACTION_MOVE:
+                mIsTouch.set(true);
+                break;
+            case MotionEvent.ACTION_CANCEL:
+            case MotionEvent.ACTION_UP:
+                mIsTouch.set(false);
+                break;
+        }
+        return super.onTouchEvent(event);
     }
 
     /**
@@ -164,7 +183,7 @@ public class DiscreteScrollView extends RecyclerView {
 
     private void notifyCurrentItemChanged(ViewHolder holder, int current) {
         for (OnItemChangedListener listener : onItemChangedListeners) {
-            listener.onCurrentItemChanged(holder, current);
+            listener.onCurrentItemChanged(holder, current, mIsTouch.get());
         }
     }
 
@@ -266,6 +285,6 @@ public class DiscreteScrollView extends RecyclerView {
          * This method will be also triggered when view appears on the screen for the first time.
          * If data set is empty, viewHolder will be null and adapterPosition will be NO_POSITION
          */
-        void onCurrentItemChanged(@Nullable T viewHolder, int adapterPosition);
+        void onCurrentItemChanged(@Nullable T viewHolder, int adapterPosition, boolean isTouch);
     }
 }
